@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwachhVision — Citizen Reporting & Issue Tracking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS for pin-drop map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    /* Citizen portal specific responsive styles */
+    .portal-wrapper {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      width: 100%;
+    }
+    
+    .tab-nav {
+      display: flex;
+      background: rgba(17, 24, 39, 0.9);
+      padding: 0.35rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+      gap: 0.5rem;
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2));
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    }
+    
+    .portal-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-card);
+    }
+    
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #f9fafb, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .card-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1.75rem;
+    }
+    
+    /* Photo Upload Area */
+    .upload-dropzone {
+      border: 2px dashed rgba(52, 211, 153, 0.4);
+      border-radius: var(--radius-md);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      background: rgba(16, 185, 129, 0.03);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    
+    .upload-dropzone:hover, .upload-dropzone.dragover {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+      transform: translateY(-2px);
+    }
+    
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+    
+    .preview-container {
+      display: none;
+      position: relative;
+      margin-bottom: 1.5rem;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      max-height: 320px;
+    }
+    
+    .preview-image {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .remove-preview-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    
+    .remove-preview-btn:hover {
+      background: #ef4444;
+      color: white;
+    }
+    
+    /* Form elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(11, 15, 25, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+    
+    /* Location picker */
+    .location-controls {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn-geo {
+      background: linear-gradient(135deg, #059669, #0d9488);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-geo:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    
+    .location-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    
+    .mini-map-container {
+      height: 200px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      margin-top: 0.5rem;
+      overflow: hidden;
+      z-index: 10;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      color: #0b0f19;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-main);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+      margin-top: 1.5rem;
+    }
+    
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(16, 185, 129, 0.45);
+    }
+    
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    /* AI Result Card */
+    .result-card {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+    
+    .ticket-id-tag {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .ai-breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .metric-box {
+      background: rgba(11, 15, 25, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+    }
+    
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+    
+    .metric-val {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    /* Stepper for ticket tracking */
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 2.5rem 0;
+    }
+    
+    .stepper::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+    
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      width: 20%;
+      text-align: center;
+    }
+    
+    .step-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .step-item.active .step-circle {
+      background: #10b981;
+      border-color: #34d399;
+      color: #0b0f19;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+    }
+    
+    .step-item.completed .step-circle {
+      background: #059669;
+      border-color: #10b981;
+      color: white;
+    }
+    
+    .step-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    
+    .step-item.active .step-label {
+      color: #34d399;
+    }
+  </style>
+</head>
+<body>
+  <!-- Global Navigation Header -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <div>
+        <div class="brand-title">SwachhVision</div>
+        <div class="brand-tagline">AI Civic Intelligence Platform</div>
+      </div>
+    </div>
+    <div class="nav-controls">
+      <nav class="nav-links">
+        <a href="/dashboard" class="nav-link">Command Center</a>
+        <a href="/citizen" class="nav-link active">Citizen Portal</a>
+        <a href="/worker" class="nav-link">Worker Ops</a>
+      </nav>
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>AI Engine Active</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="portal-wrapper">
+    <!-- Tab Switcher -->
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tab-report-btn" onclick="switchTab('report')">
+        <span>📸</span> Report New Issue
+      </button>
+      <button class="tab-btn" id="tab-track-btn" onclick="switchTab('track')">
+        <span>🔍</span> Track Ticket Status
+      </button>
+    </div>
+
+    <!-- REPORT ISSUE SECTION -->
+    <div id="section-report" class="portal-card">
+      <div id="report-form-container">
+        <h1 class="card-title">Report a Civic Hazard</h1>
+        <p class="card-subtitle">Upload a photo of garbage accumulation or sewage overflow. Our AI will automatically quantify the extent, assess severity, and dispatch municipal sanitation teams.</p>
+
+        <form id="citizen-report-form">
+          <!-- Photo Upload Dropzone -->
+          <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('image-file').click()">
+            <input type="file" id="image-file" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
+            <div class="upload-icon">📷</div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">Snap Photo or Choose File</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Supports JPG, PNG, WEBP (Auto analyzed by YOLO-seg)</div>
+          </div>
+
+          <!-- Image Preview -->
+          <div class="preview-container" id="preview-box">
+            <img src="" id="preview-img" class="preview-image" alt="Uploaded Issue Preview">
+            <button type="button" class="remove-preview-btn" onclick="clearSelectedFile()" title="Remove photo">✕</button>
+          </div>
+
+          <!-- Location Detection & Mini Map -->
+          <div class="form-group">
+            <label class="form-label">Incident GPS Location</label>
+            <div class="location-controls">
+              <button type="button" class="btn-geo" onclick="detectGPSLocation()">
+                <span>📍</span> Detect Current GPS
+              </button>
+              <div id="geo-status" class="location-badge" style="display: none;">
+                <span>✓</span> <span id="geo-status-text">Location Acquired</span>
+              </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem;">
+              <input type="number" step="any" id="lat-input" class="form-input" placeholder="Latitude (e.g. 12.9716)" required>
+              <input type="number" step="any" id="lng-input" class="form-input" placeholder="Longitude (e.g. 77.5946)" required>
+            </div>
+            
+            <div id="mini-map" class="mini-map-container"></div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Tip: Drag marker on the map to fine-tune the exact issue location.
+            </div>
+          </div>
+
+          <!-- Contact & Notes -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div class="form-group">
+              <label class="form-label">Your Phone Number (Optional)</label>
+              <input type="tel" id="citizen-phone" class="form-input" placeholder="+91 98765 43210">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Citizen Name (Optional)</label>
+              <input type="text" id="citizen-name" class="form-input" placeholder="e.g. Rahul Sharma">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Landmark / Additional Notes</label>
+            <textarea id="description-input" class="form-textarea" rows="2" placeholder="e.g. Near main drainage pipe, next to government dispensary..."></textarea>
+          </div>
+
+          <button type="submit" id="submit-report-btn" class="submit-btn">
+            <span>🚀</span> Run AI Analysis & Submit Report
+          </button>
+        </form>
+      </div>
+
+      <!-- SUCCESS / AI ANALYSIS RESULT VIEW -->
+      <div id="report-result-box" class="result-card">
+        <div class="ticket-header">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Ticket Reference</div>
+            <div id="result-ticket-id" class="ticket-id-tag">SWV-00000</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Status</div>
+            <span id="result-status-badge" class="badge-status status-reported">REPORTED</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem; text-align: center;">
+          <div id="result-severity-pill" style="display: inline-block; padding: 0.6rem 1.5rem; border-radius: 30px; font-weight: 800; font-size: 1.25rem; margin-bottom: 0.5rem;">
+            CRITICAL SEVERITY (88/100)
+          </div>
+          <div id="result-address" style="color: var(--text-secondary); font-size: 0.9rem;">
+            Geocoded Location Address
+          </div>
+        </div>
+
+        <!-- AI Metrics Grid -->
+        <div class="ai-breakdown-grid">
+          <div class="metric-box">
+            <div class="metric-label">AI Detected Issue</div>
+            <div id="result-issue-type" class="metric-val" style="color: #38bdf8;">Garbage Accumulation</div>
+            <div id="result-confidence" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Confidence: 94%</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Visible Extent</div>
+            <div id="result-extent" class="metric-val" style="color: #f59e0b;">Score 4/5 (62%)</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Weight in Severity: 60%</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Location Impact</div>
+            <div id="result-location-impact" class="metric-val" style="color: #ec4899;">Score 5/5</div>
+            <div id="result-poi-note" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Near Drainage Channel</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Assigned Authority</div>
+            <div id="result-department" class="metric-val" style="color: #10b981; font-size: 1rem;">Solid Waste Dept</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Auto-routed via AI</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <button type="button" class="btn-geo" style="flex: 1; justify-content: center;" onclick="viewTicketInTracker()">
+            <span>🔍</span> Track Live Progress
+          </button>
+          <button type="button" class="tab-btn" style="flex: 1; border: 1px solid var(--border-color);" onclick="resetReportForm()">
+            <span>➕</span> Report Another
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACK TICKET STATUS SECTION -->
+    <div id="section-track" class="portal-card" style="display: none;">
+      <h1 class="card-title">Live Resolution Tracker</h1>
+      <p class="card-subtitle">Enter your Ticket Reference ID or Incident Number to inspect real-time progress and verified before/after proof.</p>
+
+      <div style="display: flex; gap: 0.75rem; margin-bottom: 2rem;">
+        <input type="text" id="track-id-input" class="form-input" placeholder="Enter Ticket ID (e.g. 1 or SWV-00001)" style="flex: 1;">
+        <button type="button" class="btn-geo" onclick="searchTicket()">
+          <span>🔍</span> Track
+        </button>
+      </div>
+
+      <div id="track-result-container" style="display: none;">
+        <!-- Lifecycle Progress Stepper -->
+        <div class="stepper">
+          <div class="step-item active" id="step-reported">
+            <div class="step-circle">1</div>
+            <div class="step-label">Reported</div>
+          </div>
+          <div class="step-item" id="step-assigned">
+            <div class="step-circle">2</div>
+            <div class="step-label">Assigned</div>
+          </div>
+          <div class="step-item" id="step-in_progress">
+            <div class="step-circle">3</div>
+            <div class="step-label">In Progress</div>
+          </div>
+          <div class="step-item" id="step-resolved">
+            <div class="step-circle">4</div>
+            <div class="step-label">Resolved</div>
+          </div>
+          <div class="step-item" id="step-verified">
+            <div class="step-circle">5</div>
+            <div class="step-label">AI Verified</div>
+          </div>
+        </div>
+
+        <div id="track-details-card" class="metric-box" style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div>
+              <h3 id="track-issue-title" style="font-size: 1.2rem; font-weight: 700;">Garbage Accumulation</h3>
+              <p id="track-address-text" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">123 MG Road, Ward 4</p>
+            </div>
+            <span id="track-severity-badge" class="badge-severity severity-critical">CRITICAL</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+            <div>
+              <span style="color: var(--text-muted);">Assigned Authority:</span>
+              <strong id="track-dept-text" style="display: block; color: var(--text-primary);">Solid Waste Management</strong>
+            </div>
+            <div>
+              <span style="color: var(--text-muted);">Reported At:</span>
+              <strong id="track-time-text" style="display: block; color: var(--text-primary);">-</strong>
+            </div>
+          </div>
+
+          <!-- Photo View -->
+          <div style="margin-top: 1.25rem;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">INCIDENT EVIDENCE</div>
+            <img id="track-image-preview" src="" alt="Evidence" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/static/citizen.js"></script>
+</body>
+</html>

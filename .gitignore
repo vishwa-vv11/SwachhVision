@@ -1,0 +1,49 @@
+# Python Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+backend/venv/
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Database files
+*.sqlite3
+*.sqlite
+*.db
+civicai.db
+backend/civicai.db
+
+# User Uploads & Media (keep directory structure with .gitkeep)
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Operating System & IDE Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+backend/tests/temp_verify/
+
+# Node / Frontend build (if applicable)
+node_modules/
+dist/
+build/

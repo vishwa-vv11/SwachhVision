@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwachhVision — Field Worker Action Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    .worker-wrapper {
+      max-width: 1100px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      width: 100%;
+    }
+
+    /* Worker top bar */
+    .worker-header-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .worker-profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .worker-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid rgba(59, 130, 246, 0.4);
+    }
+
+    /* Worker Filter Controls */
+    .filter-bar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .filter-chip {
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .filter-chip.active {
+      background: #10b981;
+      color: #0b0f19;
+      border-color: #34d399;
+      font-weight: 700;
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* Task Card */
+    .task-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .task-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .task-card.card-critical {
+      border-left: 4px solid #ef4444;
+    }
+    .task-card.card-high {
+      border-left: 4px solid #f97316;
+    }
+    .task-card.card-medium {
+      border-left: 4px solid #eab308;
+    }
+    .task-card.card-low {
+      border-left: 4px solid #10b981;
+    }
+
+    .task-image-wrap {
+      height: 160px;
+      width: 100%;
+      position: relative;
+      background: #111827;
+      overflow: hidden;
+    }
+
+    .task-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .task-severity-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .task-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .task-loc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .task-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: rgba(11, 15, 25, 0.5);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.25rem;
+      font-size: 0.8rem;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .btn-nav {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-nav:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-action-start {
+      flex: 1;
+      background: rgba(234, 179, 8, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action-start:hover {
+      background: #eab308;
+      color: #111827;
+    }
+
+    .btn-action-resolve {
+      flex: 1;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action-resolve:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <div>
+        <div class="brand-title">SwachhVision</div>
+        <div class="brand-tagline">Field Operations Portal</div>
+      </div>
+    </div>
+    <div class="nav-controls">
+      <nav class="nav-links">
+        <a href="/dashboard" class="nav-link">Command Center</a>
+        <a href="/citizen" class="nav-link">Citizen Portal</a>
+        <a href="/worker" class="nav-link active">Worker Ops</a>
+      </nav>
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>Field GPS Sync Active</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="worker-wrapper">
+    <!-- Worker Profile Header -->
+    <div class="worker-header-card">
+      <div class="worker-profile">
+        <div class="worker-avatar">👷</div>
+        <div>
+          <h2 style="font-size: 1.25rem; font-weight: 700;">Field Response Unit #04</h2>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">Zone: South Central | Solid Waste & Drainage</p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <div style="text-align: right;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Active Queue</div>
+          <div id="queue-count-badge" style="font-size: 1.4rem; font-weight: 800; color: #34d399;">0 Tasks</div>
+        </div>
+        <button class="btn-geo" onclick="loadWorkerTasks()">
+          <span>🔄</span> Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-right: 0.5rem;">STATUS:</div>
+      <button class="filter-chip active" id="filter-all" onclick="setTaskFilter('ALL')">All Assigned</button>
+      <button class="filter-chip" id="filter-assigned" onclick="setTaskFilter('ASSIGNED')">Pending Start</button>
+      <button class="filter-chip" id="filter-in-progress" onclick="setTaskFilter('IN_PROGRESS')">In Progress</button>
+      <button class="filter-chip" id="filter-resolved" onclick="setTaskFilter('RESOLVED')">Resolved</button>
+
+      <div style="margin-left: auto;">
+        <select id="dept-filter-select" class="form-select" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" onchange="loadWorkerTasks()">
+          <option value="">All Departments</option>
+          <option value="Solid Waste Management">Solid Waste Management</option>
+          <option value="Water & Sewerage Board">Water & Sewerage Board</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Task List Grid -->
+    <div id="task-grid-container" class="task-grid">
+      <!-- Dynamic task cards loaded via worker.js -->
+    </div>
+  </main>
+
+  <!-- SUBMIT RESOLUTION MODAL -->
+  <div class="modal-overlay" id="resolution-modal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.3rem; font-weight: 700;">📸 Submit Resolution Proof</h3>
+        <button style="background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer;" onclick="closeResolutionModal()">✕</button>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Ticket: <strong id="modal-ticket-id" style="color: #34d399;">SWV-00000</strong> — <span id="modal-ticket-issue">Garbage Accumulation</span>
+      </div>
+
+      <form id="resolution-form" onsubmit="submitResolutionProof(event)">
+        <!-- Photo Picker for AFTER image -->
+        <div id="worker-photo-upload-group" class="form-group">
+          <label class="form-label">Upload Cleaned Area Photo (AFTER Image)</label>
+          <input type="file" id="after-image-file" accept="image/*" capture="environment" class="form-input" required onchange="handleAfterImagePreview(event)">
+        </div>
+
+        <div id="after-preview-container" style="display: none; margin-bottom: 1rem; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-card);">
+          <img id="after-preview-img" src="" alt="After Preview" style="width: 100%; height: 180px; object-fit: cover; display: block;">
+          <div style="padding: 0.5rem 0.75rem; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
+            <span style="font-size: 0.75rem; color: #34d399; font-weight: 700;">✓ Photo Selected</span>
+            <button type="button" class="tab-btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="resetWorkerPhotoSelection()">Change Photo</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Resolution Notes / Action Summary</label>
+          <textarea id="resolution-notes" class="form-textarea" rows="2" placeholder="e.g. Cleared 250kg waste pile, disinfected area with lime powder..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="tab-btn" style="flex: 1; border: 1px solid var(--border-color);" onclick="closeResolutionModal()">Cancel</button>
+          <button type="submit" id="modal-submit-btn" class="btn-action-resolve" style="flex: 2; padding: 0.75rem;">
+            <span>✓</span> Complete & Submit Proof
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/worker.js"></script>
+</body>
+</html>

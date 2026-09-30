@@ -1,0 +1,7 @@
+path: ../ml/data
+train: images/train
+val: images/val
+
+names:
+  0: garbage_accumulation
+  1: sewage_overflow

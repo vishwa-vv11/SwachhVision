@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SwachhVision — Municipal Admin Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- OpenStreetMap Interactive Map Library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    :root {
+      /* Civic Institutional Theme Tokens (Light Mode) */
+      --color-ink: #14213D;
+      --color-paper: #F6F4EF;
+      --color-paper-card: #FFFFFF;
+      --color-paper-subtle: #ECE8DE;
+      --color-border: #DDD8CC;
+      --color-border-hover: #C5BFB0;
+
+      --color-amber: #F2A93C;
+      --color-amber-hover: #E28B1A;
+      --color-amber-soft: rgba(242, 169, 60, 0.12);
+
+      --color-green: #2F6F4E;
+      --color-green-soft: rgba(47, 111, 78, 0.12);
+
+      --color-red: #C8433D;
+      --color-red-soft: rgba(200, 67, 61, 0.12);
+
+      --bg-body: #F6F4EF;
+      --bg-navbar: rgba(246, 244, 239, 0.96);
+      --bg-card: #FFFFFF;
+      --bg-modal: #FFFFFF;
+      --bg-input: #FAFAF8;
+
+      --text-main: #14213D;
+      --text-muted: #5A6478;
+      --text-dim: #828C9E;
+
+      --shadow-sm: 0 2px 8px rgba(20, 33, 61, 0.05);
+      --shadow-md: 0 10px 30px -5px rgba(20, 33, 61, 0.08), 0 0 0 1px var(--color-border);
+      --shadow-lg: 0 20px 45px -10px rgba(20, 33, 61, 0.12), 0 0 0 1px var(--color-border);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    }
+
+    [data-theme="dark"] {
+      /* Soft Mocha & Warm Milk Cocoa Palette (Muted, Not Pitch Dark) */
+      --color-ink: #FAF5EF;
+      --color-paper: #261E1A;
+      --color-paper-card: #332A24;
+      --color-paper-subtle: #3D332C;
+      --color-border: #4D4036;
+      --color-border-hover: #6A584A;
+
+      --color-amber: #E59838;
+      --color-amber-hover: #FBBF24;
+      --color-amber-soft: rgba(229, 152, 56, 0.18);
+
+      --color-green: #34D399;
+      --color-green-soft: rgba(52, 211, 153, 0.18);
+
+      --color-red: #F87171;
+      --color-red-soft: rgba(248, 113, 113, 0.2);
+
+      --bg-body: #261E1A;
+      --bg-navbar: rgba(38, 30, 26, 0.95);
+      --bg-card: #332A24;
+      --bg-modal: #332A24;
+      --bg-input: #2A221C;
+
+      --text-main: #FAF5EF;
+      --text-muted: #D8CCC0;
+      --text-dim: #AA9A8C;
+
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 12px 35px -5px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(250, 245, 239, 0.08);
+      --shadow-lg: 0 22px 50px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(250, 245, 239, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* LARGE HEADER NAVBAR */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 3rem;
+      min-height: 125px;
+      background: var(--bg-navbar);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: 12px;
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="dark"] .brand {
+      background: #FFFFFF;
+      border-radius: 10px;
+      padding: 4px 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    }
+
+    .brand-logo-img {
+      height: 110px;
+      width: auto;
+      max-width: 480px;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 4px 16px rgba(20, 33, 61, 0.15));
+      transition: transform 0.25s ease;
+    }
+
+    .brand-logo-img:hover {
+      transform: scale(1.02);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .btn-nav-control {
+      background: var(--bg-card);
+      border: 1.5px solid var(--color-border);
+      color: var(--text-main);
+      padding: 0.55rem 1.1rem;
+      border-radius: 30px;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav-control:hover {
+      border-color: var(--color-amber);
+      background: var(--color-paper-subtle);
+      transform: translateY(-1px);
+    }
+
+    [data-theme="dark"] .btn-nav-control {
+      background: #18243C;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .btn-nav-control:hover {
+      background: #223354;
+      border-color: #FBBF24;
+      box-shadow: 0 4px 14px rgba(251, 191, 36, 0.35);
+    }
+
+    .theme-toggle-btn {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    /* PASSCODE AUTH LOCK SCREEN (MANDATORY BEFORE ENTERING) */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1.5rem;
+    }
+
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2.75rem 2.25rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-icon {
+      font-size: 3rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 0.95rem 1.15rem;
+      background: var(--bg-input);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--color-amber);
+      box-shadow: 0 0 0 3px var(--color-amber-soft);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--color-amber) 0%, var(--color-amber-hover) 100%);
+      color: #14213D;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(242, 169, 60, 0.35);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(242, 169, 60, 0.45);
+    }
+
+    /* FULL PC VIEWPORT */
+    .page-viewport {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 2rem 4rem 2rem;
+    }
+
+    .admin-wrapper {
+      max-width: 1100px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Mobile Frame */
+    body.mobile-frame-mode .admin-wrapper {
+      max-width: 420px;
+      background: var(--bg-body);
+      border: 10px solid #14213D;
+      border-radius: 46px;
+      padding: 1.25rem;
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    .mobile-notch {
+      display: none;
+      width: 140px;
+      height: 22px;
+      background: #14213D;
+      border-radius: 0 0 14px 14px;
+      margin: -1.25rem auto 1.25rem auto;
+    }
+
+    body.mobile-frame-mode .mobile-notch {
+      display: block;
+    }
+
+    /* STATS OVERVIEW CARDS */
+    .admin-stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 650px) {
+      .admin-stats-bar {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-num {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--color-ink);
+      margin-top: 0.25rem;
+    }
+
+    /* SEARCH & FILTER CONTROLS */
+    .feed-search-bar {
+      display: flex;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      padding: 0.95rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.65rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+
+    .filter-tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--color-border);
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 30px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-tab-btn:hover {
+      color: var(--text-main);
+      border-color: var(--color-border-hover);
+    }
+
+    .filter-tab-btn.active {
+      background: var(--color-ink);
+      color: #F6F4EF;
+      border-color: var(--color-ink);
+    }
+
+    /* SOCIAL CARD FEED (LINKEDIN STYLE - NO MAP) */
+    .feed-card {
+      background: var(--bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: clamp(1.25rem, 3vw, 1.75rem);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.95rem;
+    }
+
+    .feed-user-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .feed-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-paper-subtle);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+    }
+
+    .feed-author-name {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--color-ink);
+    }
+
+    .feed-time {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+
+    .feed-location-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+      font-weight: 600;
+    }
+
+    .feed-image-container {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 1.15rem;
+      border: 1px solid var(--color-border);
+      background: #000;
+      max-height: 440px;
+    }
+
+    .feed-image-container img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .feed-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+      background: var(--bg-input);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 1.15rem;
+      margin-bottom: 1.15rem;
+    }
+
+    @media (min-width: 600px) {
+      .feed-metrics-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .feed-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .status-select {
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .status-select:focus {
+      outline: none;
+      border-color: var(--color-amber);
+    }
+
+    /* SEVERITY PILLS */
+    .sev-pill {
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+    }
+    .sev-critical { background: var(--color-red-soft); color: var(--color-red); border: 1px solid var(--color-red); }
+    .sev-high { background: var(--color-amber-soft); color: var(--color-amber-hover); border: 1px solid var(--color-amber); }
+    .sev-medium { background: var(--color-amber-soft); color: var(--color-amber); border: 1px solid var(--color-amber); }
+    .sev-low { background: var(--color-green-soft); color: var(--color-green); border: 1px solid var(--color-green); }
+
+    /* MODAL */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(20, 33, 61, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-dialog {
+      background: var(--bg-modal);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <a href="/admin" class="brand" title="SwachhVision Admin Operations">
+      <img src="/logo.png" alt="SwachhVision Admin" class="brand-logo-img">
+    </a>
+
+    <div class="nav-actions">
+      <!-- Device View Toggle (PC / Mobile Simulator) -->
+      <button type="button" class="btn-nav-control" id="device-toggle" onclick="toggleDeviceView()" title="Switch between Full PC & Mobile View">
+        <span id="device-icon">📱</span> <span id="device-label">Mobile View</span>
+      </button>
+
+      <!-- Theme Switcher -->
+      <button type="button" class="btn-nav-control theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Dark / Light Theme" aria-label="Toggle Theme">
+        <span id="theme-icon">🌙</span>
+      </button>
+
+      <!-- Logout Button -->
+      <button type="button" class="btn-nav-control" onclick="logoutAdmin()" title="Logout of Admin Session">
+        <span>🔒</span> Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- Passcode Auth Screen (MANDATORY BEFORE ACCESSING) -->
+  <div class="auth-overlay" id="auth-modal">
+    <div class="auth-card">
+      <div class="auth-icon">🛡️</div>
+      <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 900; margin-bottom: 0.35rem; color: var(--color-ink);">Municipal Admin Portal</h2>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">Enter authorized municipal supervisor passcode to manage complaints.</p>
+      
+      <form onsubmit="handlePasscodeAuth(event)">
+        <input type="password" id="admin-passcode" class="input-field" placeholder="Enter Passcode (e.g. admin123)" required autofocus autocomplete="current-password">
+        <div id="auth-error" style="display: none; color: var(--color-red); font-size: 0.84rem; font-weight: 700; margin-bottom: 1rem;">
+          ❌ Invalid Passcode. Please try again.
+        </div>
+        <button type="submit" class="btn-submit">
+          <span>🔓</span> Access Operations Feed
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Viewport Area (Full-Width PC Layout) -->
+  <div class="page-viewport">
+    <main class="admin-wrapper" id="admin-main-content" style="display: none;">
+      <div class="mobile-notch"></div>
+
+      <!-- Stats Overview Widgets -->
+      <div class="admin-stats-bar">
+        <div class="stat-box">
+          <div class="stat-label">Total Reports</div>
+          <div id="stat-total" class="stat-num">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Working / In Progress</div>
+          <div id="stat-working" class="stat-num" style="color: var(--color-amber);">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Completed & Verified</div>
+          <div id="stat-completed" class="stat-num" style="color: var(--color-green);">0</div>
+        </div>
+      </div>
+
+      <!-- Interactive City Garbage Hotspots Map Card with Next/Prev Switcher -->
+      <section class="admin-map-card" style="background: var(--bg-card); border: 1px solid var(--color-border); border-radius: 12px; margin-bottom: 1.75rem; overflow: hidden; box-shadow: var(--shadow-card);">
+        <div style="padding: 0.9rem 1.25rem; background: var(--bg-card-elevated); border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.25rem;">🗺️</span>
+            <div>
+              <h3 style="font-size: 1rem; font-weight: 800; color: var(--color-ink); margin: 0;">City Garbage Hotspot Map</h3>
+              <span style="font-size: 0.74rem; color: var(--text-dim);">Live geographic mapping of all reported waste sites across the city</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span id="map-spots-count" style="font-size: 0.74rem; font-weight: 800; background: var(--color-amber-soft); color: var(--color-amber-hover); padding: 0.2rem 0.6rem; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">0 Waste Sites</span>
+          </div>
+        </div>
+
+        <!-- Leaflet Map Canvas -->
+        <div id="admin-city-map" style="height: 360px; width: 100%; background: #E5E7EB; position: relative; z-index: 1;"></div>
+
+        <!-- Map Navigation Controls (Previous / Next Spots) -->
+        <div style="padding: 0.75rem 1.25rem; background: var(--bg-input); border-top: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <button type="button" class="btn-nav-control" id="btn-map-prev" onclick="navigateMapSpot(-1)" style="font-size: 0.82rem; padding: 0.45rem 0.9rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <span>⬅</span> Previous Spot
+          </button>
+
+          <div style="text-align: center; flex: 1; min-width: 220px;">
+            <div id="map-current-spot-title" style="font-weight: 800; font-size: 0.88rem; color: var(--color-ink);">No Active Garbage Sites</div>
+            <div id="map-current-spot-sub" style="font-size: 0.75rem; color: var(--text-muted);">Use arrows to jump between reported garbage locations</div>
+          </div>
+
+          <button type="button" class="btn-nav-control" id="btn-map-next" onclick="navigateMapSpot(1)" style="font-size: 0.82rem; padding: 0.45rem 0.9rem; background: var(--btn-primary-bg); color: var(--btn-primary-text); font-weight: 800; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <span>Next Spot</span> <span>➡</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Search & Filter Controls -->
+      <div class="feed-search-bar">
+        <span>🔍</span>
+        <input type="text" id="feed-search" class="input-field" placeholder="Search by ticket #, ward, or address..." oninput="filterAdminFeed()" style="border: none; background: transparent; padding: 0.25rem; margin-bottom: 0;">
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div class="filter-tabs" style="margin-bottom: 0;">
+          <button class="filter-tab-btn active" id="tab-all" onclick="setAdminFilter('ALL')">All Reports</button>
+          <button class="filter-tab-btn" id="tab-open" onclick="setAdminFilter('OPEN')">Open</button>
+          <button class="filter-tab-btn" id="tab-working" onclick="setAdminFilter('WORKING')">Working</button>
+          <button class="filter-tab-btn" id="tab-completed" onclick="setAdminFilter('COMPLETED')">Completed</button>
+        </div>
+      </div>
+
+      <!-- Social / LinkedIn Style Card Feed (NO MAP) -->
+      <div id="admin-feed-container">
+        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+          Loading civic complaints feed...
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Quality Verification Modal for Resolution Proof -->
+  <div class="modal-backdrop" id="completion-modal">
+    <div class="modal-dialog">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: var(--color-ink);">📸 Post Resolution Proof</h3>
+        <button style="background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="closeCompletionModal()">✕</button>
+      </div>
+
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Upload the completed <strong>AFTER</strong> cleanup photo for <strong id="modal-complaint-id" style="color: var(--color-amber-hover);">#SWV-00000</strong> to mark this ticket verified & closed.
+      </p>
+
+      <form onsubmit="submitCompletionProof(event)">
+        <div id="after-photo-upload-group" style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--color-ink); margin-bottom: 0.35rem;">Cleaned Site Photo (AFTER Proof)</label>
+          <input type="file" id="after-photo-file" accept="image/*" class="input-field" required onchange="previewAfterPhoto(event)">
+        </div>
+
+        <div id="after-preview-box" style="display: none; border-radius: 8px; overflow: hidden; margin-bottom: 1rem; border: 1.5px solid var(--color-border); background: var(--bg-card);">
+          <div style="height: 190px; width: 100%; overflow: hidden; background: #000;">
+            <img id="after-preview-img" src="" alt="After Preview" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; background: var(--bg-input); border-top: 1px solid var(--color-border);">
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--color-green); display: flex; align-items: center; gap: 0.4rem;">
+              <span>✓</span> <span id="after-preview-filename">photo_attached.jpg</span>
+            </div>
+            <button type="button" class="btn-nav-control" style="font-size: 0.78rem; padding: 0.3rem 0.7rem;" onclick="resetAfterPhotoSelection()">Change Photo</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.35rem;">
+          <label style="display: block; font-size: 0.84rem; font-weight: 700; color: var(--color-ink); margin-bottom: 0.35rem;">Supervisor Field Remarks</label>
+          <input type="text" id="admin-notes" class="input-field" placeholder="e.g. Cleared 250kg waste, sanitized drainage channel.">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem;">
+          <button type="button" class="btn-nav-control" style="flex: 1; justify-content: center; border-radius: var(--radius-sm);" onclick="closeCompletionModal()">Cancel</button>
+          <button type="submit" id="btn-save-complete" class="btn-submit" style="flex: 2;">
+            <span>✓</span> Post & Complete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Interactive OpenStreetMap Location & Routing Modal -->
+  <div class="modal-backdrop" id="map-modal" onclick="handleMapBackdropClick(event)">
+    <div class="modal-dialog" style="max-width: 680px; width: 100%; border-radius: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.5rem;">🗺️</span>
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: var(--color-ink);" id="map-modal-title">Incident Location</h3>
+            <div style="font-size: 0.76rem; color: var(--text-dim);" id="map-modal-coords">Coordinates: Loading...</div>
+          </div>
+        </div>
+        <button style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; padding: 0.2rem;" onclick="closeMapModal()">✕</button>
+      </div>
+
+      <!-- OpenStreetMap Container (Leaflet) -->
+      <div id="admin-map-container" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid var(--color-border); margin-bottom: 1.15rem; background: #e5e7eb; position: relative; z-index: 1;"></div>
+
+      <!-- Location Details Box -->
+      <div style="background: var(--bg-input); border: 1px solid var(--color-border); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.15rem;">
+        <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.03em;">Verified Street Address / Landmark</div>
+        <div id="map-modal-address" style="font-size: 0.92rem; font-weight: 700; color: var(--color-ink); margin-top: 0.25rem; line-height: 1.4;">Location address loading...</div>
+      </div>
+
+      <!-- Quick External Routing & Navigation Links -->
+      <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+        <a id="btn-osm-link" href="#" target="_blank" class="btn-nav-control" style="flex: 1; min-width: 140px; justify-content: center; font-size: 0.82rem; padding: 0.55rem; text-decoration: none;">
+          <span>🌍</span> OpenStreetMap
+        </a>
+        <a id="btn-gmaps-link" href="#" target="_blank" class="btn-nav-control" style="flex: 1; min-width: 140px; justify-content: center; font-size: 0.82rem; padding: 0.55rem; text-decoration: none;">
+          <span>📍</span> Google Maps
+        </a>
+        <a id="btn-directions-link" href="#" target="_blank" class="btn-submit" style="flex: 1.3; min-width: 170px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.86rem; padding: 0.55rem; text-decoration: none; border-radius: 30px;">
+          <span>🚗</span> Field Crew Route
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js?v=2026_map_v11"></script>
+  <script>
+    function applySavedTheme() {
+      const savedTheme = localStorage.getItem('swachh_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('swachh_theme', next);
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+
+    function toggleDeviceView() {
+      const isMobile = document.body.classList.toggle('mobile-frame-mode');
+      const icon = document.getElementById('device-icon');
+      const label = document.getElementById('device-label');
+      
+      if (isMobile) {
+        icon.textContent = '🖥️';
+        label.textContent = 'Full PC View';
+      } else {
+        icon.textContent = '📱';
+        label.textContent = 'Mobile View';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', applySavedTheme);
+  </script>
+</body>
+</html>

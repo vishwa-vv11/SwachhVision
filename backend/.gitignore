@@ -1,0 +1,32 @@
+# Python Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Database files
+*.sqlite3
+*.sqlite
+*.db
+civicai.db
+
+# User Uploads & Media (keep directory structure with .gitkeep)
+uploads/*
+!uploads/.gitkeep
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+tests/temp_verify/
