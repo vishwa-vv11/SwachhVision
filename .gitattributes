@@ -1,13 +1,8 @@
-# Keep the legacy portal front-end assets out of GitHub language statistics
-# so the repo reflects the Python/FastAPI backend as the primary implementation.
-frontend/**/*.html linguist-vendored
-frontend/**/*.css linguist-vendored
-frontend/**/*.js linguist-vendored
-frontend/**/*.jsx linguist-vendored
-frontend/**/*.ts linguist-vendored
-frontend/**/*.tsx linguist-vendored
-frontend/**/*.json linguist-vendored
-frontend/**/*.svg linguist-vendored
+# Keep the original static portal pages from outweighing the backend.
+# The React app remains included in GitHub's language statistics.
+frontend/*.html linguist-vendored
+frontend/*.js linguist-vendored
+frontend/styles.css linguist-vendored
 
 # Keep docs under documentation reporting instead of code-language weighting.
 docs/** linguist-documentation
