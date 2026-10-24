@@ -18,6 +18,30 @@ An automated civic intelligence platform designed for municipal corporations and
   <img src="docs/assets/swachhvision-homepage.png" alt="SwachhVision citizen portal showing the AI hotspot map and civic reporting actions" width="100%">
 </p>
 
+### Citizen Location Selection
+
+Citizens can pinpoint a report on an interactive map, adjust the marker to the exact location, and confirm the selected coordinates before submitting.
+
+<p align="center">
+  <img src="docs/assets/citizen-location-picker.png" alt="Citizen reporting form with an interactive map modal for selecting the precise waste location" width="100%">
+</p>
+
+### Municipal Hotspot Overview
+
+The admin dashboard summarizes report and resolution counts and maps reported waste sites, helping municipal teams monitor hotspot locations across the city.
+
+<p align="center">
+  <img src="docs/assets/admin-hotspot-map.png" alt="Municipal operations dashboard with report metrics and a city map of garbage hotspots" width="100%">
+</p>
+
+### Incident Details and Severity
+
+Each incident card presents the submitted waste photo, AI-assessed extent and severity, location context, and current status so teams can understand and prioritize reports.
+
+<p align="center">
+  <img src="docs/assets/incident-detail-card.png" alt="Incident details showing a waste accumulation photo, critical severity, location context, and report status" width="100%">
+</p>
+
 ---
 
 ## Key Capabilities
