@@ -1,4 +1,6 @@
-# 🌿 SwachhVision — AI Garbage Hotspot Detection & Civic Intelligence System
+# SwachhVision
+
+## AI Garbage Hotspot Detection and Civic Intelligence System
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
@@ -10,7 +12,7 @@ An automated civic intelligence platform designed for municipal corporations and
 
 ---
 
-## ✨ SwachhVision Interface
+## Interface Preview
 
 <p align="center">
   <img src="docs/assets/swachhvision-homepage.png" alt="SwachhVision citizen portal showing the AI hotspot map and civic reporting actions" width="100%">
@@ -18,7 +20,7 @@ An automated civic intelligence platform designed for municipal corporations and
 
 ---
 
-## 🌟 Key Capabilities
+## Key Capabilities
 
 1. **Dual AI Visual Assessment**:
    - Analyzes citizen hazard photos using YOLOv8 segmentation and OpenCV spatial pixel coverage.
@@ -34,7 +36,7 @@ An automated civic intelligence platform designed for municipal corporations and
 
 ---
 
-## 🏛️ Integrated Portals
+## Integrated Portals
 
 | Portal | Route | Description |
 | :--- | :--- | :--- |
@@ -46,14 +48,14 @@ An automated civic intelligence platform designed for municipal corporations and
 
 ---
 
-## 🚀 Quickstart Guide
+## Quickstart
 
 ### Prerequisites
 - Python 3.10+
 - Node.js 20.19+ (or 22.12+) and npm for the React frontend
 - (Optional) PostgreSQL with PostGIS extension (system automatically falls back to SQLite `civicai.db` if PostgreSQL is not running).
 
-### 1. Clone & Set Up Backend
+### 1. Set Up the Backend
 ```bash
 # Navigate to the backend directory
 cd backend
@@ -97,7 +99,7 @@ python -m unittest discover -s tests
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 ├── backend/
@@ -123,5 +125,5 @@ python -m unittest discover -s tests
 
 ---
 
-## 🛡️ License
+## License
 Distributed under the MIT License. See `LICENSE` for more information.
