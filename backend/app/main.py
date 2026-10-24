@@ -17,6 +17,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 UPLOADS_DIR = BACKEND_DIR / "uploads"
 FRONTEND_DIR = BASE_DIR / "frontend"
+FRONTEND_DIST_DIR = FRONTEND_DIR / "dist"
+FRONTEND_BUILD_INDEX = FRONTEND_DIST_DIR / "index.html"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(
@@ -54,9 +56,16 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 # Mount frontend static files
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+if FRONTEND_DIST_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST_DIR)), name="frontend-assets")
 
 # Include API Router
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+def portal_index(legacy_filename: str) -> Path:
+    if FRONTEND_BUILD_INDEX.exists():
+        return FRONTEND_BUILD_INDEX
+    return FRONTEND_DIR / legacy_filename
 
 @app.on_event("startup")
 async def on_startup():
@@ -69,7 +78,7 @@ async def on_startup():
 @app.get("/")
 def root(request: Request):
     accept_header = request.headers.get("accept", "")
-    index_file = FRONTEND_DIR / "index.html"
+    index_file = portal_index("index.html")
     
     # If client specifically asks for JSON (e.g. API test / client), return JSON
     if "application/json" in accept_header:
@@ -90,62 +99,62 @@ def root(request: Request):
 
 @app.get("/admin")
 def admin_portal():
-    admin_file = FRONTEND_DIR / "admin.html"
+    admin_file = portal_index("admin.html")
     return FileResponse(admin_file)
 
 @app.get("/admin.html")
 def admin_portal_html():
-    admin_file = FRONTEND_DIR / "admin.html"
+    admin_file = portal_index("admin.html")
     return FileResponse(admin_file)
 
 @app.get("/citizen")
 def citizen_portal():
-    citizen_file = FRONTEND_DIR / "index.html"
+    citizen_file = portal_index("index.html")
     return FileResponse(citizen_file)
 
 @app.get("/citizen.html")
 def citizen_portal_html():
-    citizen_file = FRONTEND_DIR / "index.html"
+    citizen_file = portal_index("index.html")
     return FileResponse(citizen_file)
 
 @app.get("/index.html")
 def index_portal_html():
-    index_file = FRONTEND_DIR / "index.html"
+    index_file = portal_index("index.html")
     return FileResponse(index_file)
 
 @app.get("/dashboard")
 def dashboard():
-    admin_file = FRONTEND_DIR / "admin.html"
+    admin_file = portal_index("admin.html")
     return FileResponse(admin_file)
 
 @app.get("/worker")
 def worker_portal():
-    worker_file = FRONTEND_DIR / "worker.html"
+    worker_file = portal_index("worker.html")
     return FileResponse(worker_file)
 
 @app.get("/worker.html")
 def worker_portal_html():
-    worker_file = FRONTEND_DIR / "worker.html"
+    worker_file = portal_index("worker.html")
     return FileResponse(worker_file)
 
 @app.get("/track/{incident_id}")
 def track_portal(incident_id: int):
-    tracker_file = FRONTEND_DIR / "tracker.html"
+    tracker_file = portal_index("tracker.html")
     return FileResponse(tracker_file)
 
 @app.get("/tracker")
 def tracker_portal():
-    tracker_file = FRONTEND_DIR / "tracker.html"
+    tracker_file = portal_index("tracker.html")
     return FileResponse(tracker_file)
 
 @app.get("/tracker.html")
 def tracker_portal_html():
-    tracker_file = FRONTEND_DIR / "tracker.html"
+    tracker_file = portal_index("tracker.html")
     return FileResponse(tracker_file)
 
 @app.get("/tracker/{incident_id}")
 def tracker_detail_portal(incident_id: int):
-    tracker_file = FRONTEND_DIR / "tracker.html"
+    tracker_file = portal_index("tracker.html")
     return FileResponse(tracker_file)
 
 # Direct static fallbacks for root-level asset requests

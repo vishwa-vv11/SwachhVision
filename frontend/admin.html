@@ -551,7 +551,17 @@
   <header class="navbar">
     <a href="/admin" class="brand" title="SwachhVision Admin Operations">
       <img src="/logo.png" alt="SwachhVision Admin" class="brand-logo-img">
+      <span class="admin-brand-copy">
+        <strong>SwachhVision</strong>
+        <span>Municipal operations</span>
+      </span>
     </a>
+
+    <nav class="admin-nav" aria-label="Operations navigation">
+      <a class="active" href="/admin" aria-current="page">Command center</a>
+      <a href="/citizen">Citizen portal <span aria-hidden="true">↗</span></a>
+      <a href="/worker">Field teams <span aria-hidden="true">↗</span></a>
+    </nav>
 
     <div class="nav-actions">
       <!-- Device View Toggle (PC / Mobile Simulator) -->
@@ -565,8 +575,8 @@
       </button>
 
       <!-- Logout Button -->
-      <button type="button" class="btn-nav-control" onclick="logoutAdmin()" title="Logout of Admin Session">
-        <span>🔒</span> Logout
+      <button type="button" class="btn-nav-control" id="logout-control" onclick="logoutAdmin()" title="Logout of Admin Session" aria-label="Logout">
+        <span aria-hidden="true">🔒</span><span class="logout-label">Logout</span>
       </button>
     </div>
   </header>
@@ -594,6 +604,32 @@
   <div class="page-viewport">
     <main class="admin-wrapper" id="admin-main-content" style="display: none;">
       <div class="mobile-notch"></div>
+
+      <section class="operations-hero" aria-labelledby="operations-title">
+        <div class="operations-hero-copy">
+          <div class="operations-eyebrow"><span></span> SWACHHVISION / MUNICIPAL COMMAND</div>
+          <h1 id="operations-title">A clearer view<br>of every <em>street.</em></h1>
+          <p>One live picture of reported hotspots, field response, and verified cleanups across your city.</p>
+          <div class="operations-live"><span></span> City operations at a glance</div>
+        </div>
+        <div class="operations-hero-art" aria-hidden="true">
+          <div class="operations-map-grid"></div>
+          <span class="operations-map-ring operations-map-ring-one"></span>
+          <span class="operations-map-ring operations-map-ring-two"></span>
+          <span class="operations-map-line operations-map-line-one"></span>
+          <span class="operations-map-line operations-map-line-two"></span>
+          <span class="operations-map-road operations-map-road-one"></span>
+          <span class="operations-map-road operations-map-road-two"></span>
+          <span class="operations-map-block operations-map-block-one"></span>
+          <span class="operations-map-block operations-map-block-two"></span>
+          <span class="operations-map-block operations-map-block-three"></span>
+          <span class="operations-map-pin operations-map-pin-one"></span>
+          <span class="operations-map-pin operations-map-pin-two"></span>
+          <span class="operations-map-pin operations-map-pin-three"></span>
+          <span class="operations-map-core">LIVE</span>
+          <span class="operations-map-label">FIELD SIGNAL / ACTIVE</span>
+        </div>
+      </section>
 
       <!-- Stats Overview Widgets -->
       <div class="admin-stats-bar">
@@ -753,7 +789,7 @@
     </div>
   </div>
 
-  <script src="admin.js?v=2026_map_v11"></script>
+  <script src="admin.js?v=2026_react_bridge_v12"></script>
   <script>
     function applySavedTheme() {
       const savedTheme = localStorage.getItem('swachh_theme') || 'light';

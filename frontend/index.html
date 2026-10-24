@@ -1182,6 +1182,11 @@
       <img src="/logo.png" alt="SwachhVision" class="brand-logo-img">
     </a>
 
+    <nav class="portal-nav" aria-label="Main navigation">
+      <a href="#complaint-form">Report an issue</a>
+      <a href="/tracker">Track a report <span aria-hidden="true">↗</span></a>
+    </nav>
+
     <div class="nav-actions">
       <!-- Device View Toggle (Icon Only) -->
       <button type="button" class="icon-round-btn" id="device-toggle" onclick="toggleDeviceView()" title="Toggle View" aria-label="Toggle View">
@@ -1211,18 +1216,44 @@
         <!-- 1. What This System Is (National Civic AI Platform Overview) -->
         <div class="system-intro-block" style="margin-bottom: 0.25rem;">
           <div class="system-badge-pill" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--color-amber-hover); background: var(--color-amber-soft); padding: 0.35rem 0.85rem; border-radius: var(--radius-pill); border: 1px solid rgba(217, 119, 6, 0.25); margin-bottom: 0.5rem; letter-spacing: 0.04em;">
-            <svg width="18" height="12" viewBox="0 0 18 12" fill="none" style="border-radius: 2px; overflow: hidden; flex-shrink: 0; box-shadow: 0 0 1px rgba(0,0,0,0.3);">
-              <rect width="18" height="4" fill="#FF9933"/>
-              <rect y="4" width="18" height="4" fill="#FFFFFF"/>
-              <rect y="8" width="18" height="4" fill="#138808"/>
-              <circle cx="9" cy="6" r="1.5" stroke="#000080" stroke-width="0.75" fill="none"/>
-            </svg>
-            SwachhVision
+            <span class="india-mark" aria-hidden="true">✳</span>
+            CIVIC INTELLIGENCE · INDIA
           </div>
-          <h1 class="hero-title" style="margin-top: 0.25rem; margin-bottom: 0.5rem;">AI Garbage Hotspot Detection System</h1>
+          <h1 class="hero-title" style="margin-top: 0.25rem; margin-bottom: 0.5rem;">Cleaner streets.<br>Smarter response.</h1>
           <p class="hero-desc" style="font-size: 1.05rem; line-height: 1.6; color: var(--text-muted); max-width: 740px;">
-            An automated civic intelligence platform across India. Combining computer vision, spatial clustering, and automated dispatch to detect street waste accumulation, identify chronic hotspots, and guarantee verified resolution proof across all localities.
+            SwachhVision uses AI to spot waste hotspots, bring reports to the right municipal teams, and show when a cleanup is complete.
           </p>
+          <div class="hero-actions">
+            <a class="hero-primary-action" href="#complaint-form">Report a neighbourhood issue <span aria-hidden="true">↗</span></a>
+            <a class="hero-secondary-action" href="/tracker">Track a report</a>
+          </div>
+          <div class="hero-footnote"><span class="hero-live-dot"></span> Citizen-powered. AI-assisted. Verified on the ground.</div>
+        </div>
+
+        <div class="hero-art" aria-label="Illustration of an AI-mapped neighbourhood hotspot">
+          <div class="hero-art-topline"><span>SWACHHVISION / FIELD VIEW</span><span>INDIA · 01</span></div>
+          <div class="neighbourhood-map" aria-hidden="true">
+            <span class="map-road map-road-one"></span>
+            <span class="map-road map-road-two"></span>
+            <span class="map-road map-road-three"></span>
+            <span class="map-road map-road-four"></span>
+            <span class="map-route"></span>
+            <span class="map-block map-block-one"></span>
+            <span class="map-block map-block-two"></span>
+            <span class="map-block map-block-three"></span>
+            <span class="map-block map-block-four"></span>
+            <span class="map-block map-block-five"></span>
+            <span class="map-block map-block-six"></span>
+            <span class="map-pin map-pin-one"><i></i></span>
+            <span class="map-pin map-pin-two"><i></i></span>
+            <span class="map-pin map-pin-three"><i></i></span>
+            <span class="map-center"><span>AI</span></span>
+          </div>
+          <div class="map-caption">
+            <span class="map-caption-icon">↗</span>
+            <span><strong>From report to resolution</strong><small>Every hotspot has a way forward.</small></span>
+          </div>
+          <div class="map-coordinate">12°58' N&nbsp; 77°35' E<br><span>COMMUNITY SIGNAL / ACTIVE</span></div>
         </div>
 
         <!-- 2. Real-Time Resolution Transparency Bar -->
@@ -1288,7 +1319,7 @@
         </div>
 
         <!-- 4. How to Report a Civic Hazard Guide -->
-        <div style="padding-top: 1.15rem; margin-top: 0.5rem; border-top: 1.5px solid var(--color-border);">
+        <div class="reporting-guide" style="padding-top: 1.15rem; margin-top: 0.5rem; border-top: 1.5px solid var(--color-border);">
           <div style="display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; font-weight: 800; text-transform: uppercase; color: var(--color-amber-hover); letter-spacing: 0.06em; margin-bottom: 0.4rem; background: var(--color-amber-soft); padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); border: 1px solid rgba(217, 119, 6, 0.25);">
             <span>📋</span> Citizen Reporting Guide
           </div>
@@ -1583,7 +1614,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=2026_clean_civic_v13"></script>
+  <script src="app.js?v=2026_react_bridge_v14"></script>
   <script>
     // Drag and Drop Helpers
     function handleDragOver(e) {

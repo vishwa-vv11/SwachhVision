@@ -1,5 +1,5 @@
 // SwachhVision Admin Console Logic
-const API_BASE = (window.location.protocol.startsWith('http') && (window.location.port === '8000' || window.location.pathname.startsWith('/admin')))
+const API_BASE = window.location.protocol.startsWith('http')
   ? '/api/v1'
   : 'http://127.0.0.1:8000/api/v1';
 const DEFAULT_PASSCODE = 'admin123';
@@ -101,10 +101,7 @@ function filterAdminFeed() {
 function resolveImageUrl(url) {
   if (!url) return 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=600';
   if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-  const base = (typeof API_BASE !== 'undefined' && API_BASE.startsWith('http')) 
-    ? API_BASE.replace(/\/api\/v1\/?$/, '') 
-    : 'http://127.0.0.1:8000';
-  return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
+  return url.startsWith('/') ? url : `/${url}`;
 }
 
 function initOrUpdateCityMap() {
@@ -614,4 +611,3 @@ function handleMapBackdropClick(e) {
     closeMapModal();
   }
 }
-

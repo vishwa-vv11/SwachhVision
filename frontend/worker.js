@@ -1,5 +1,5 @@
 // SwachhVision Field Worker Action Portal Logic
-const API_BASE = (window.location.protocol.startsWith('http') && (window.location.port === '8000' || window.location.pathname.startsWith('/worker')))
+const API_BASE = window.location.protocol.startsWith('http')
   ? '/api/v1'
   : 'http://127.0.0.1:8000/api/v1';
 
@@ -18,7 +18,7 @@ async function loadWorkerTasks() {
   grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">Fetching assigned civic tasks...</div>';
 
   try {
-    let url = `${API_BASE}/incidents`;
+    let url = `${API_BASE}/incidents/`;
     const params = new URLSearchParams();
     if (dept) params.append('department', dept);
     if (params.toString()) url += `?${params.toString()}`;

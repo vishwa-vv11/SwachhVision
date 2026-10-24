@@ -10,6 +10,14 @@ An automated civic intelligence platform designed for municipal corporations and
 
 ---
 
+## ✨ SwachhVision Interface
+
+<p align="center">
+  <img src="docs/assets/swachhvision-homepage.png" alt="SwachhVision citizen portal showing the AI hotspot map and civic reporting actions" width="100%">
+</p>
+
+---
+
 ## 🌟 Key Capabilities
 
 1. **Dual AI Visual Assessment**:
@@ -42,6 +50,7 @@ An automated civic intelligence platform designed for municipal corporations and
 
 ### Prerequisites
 - Python 3.10+
+- Node.js 20.19+ (or 22.12+) and npm for the React frontend
 - (Optional) PostgreSQL with PostGIS extension (system automatically falls back to SQLite `civicai.db` if PostgreSQL is not running).
 
 ### 1. Clone & Set Up Backend
@@ -62,15 +71,26 @@ pip install -r requirements.txt
 ```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser to access the backend and API documentation.
 
-### 3. (Optional) Seed Demo Data
+### 3. Start the React Frontend (Development)
+In a separate terminal:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open the Vite URL shown in the terminal (normally [http://127.0.0.1:5173](http://127.0.0.1:5173)). The development server proxies API and upload requests to FastAPI.
+
+For production, run `npm run build` in `frontend` before starting FastAPI. The backend will serve the React build on the portal routes.
+
+### 4. (Optional) Seed Demo Data
 To populate realistic civic incidents across Bengaluru/Delhi/Mumbai for demonstration:
 ```bash
 python -m app.db.seed_demo_data
 ```
 
-### 4. Run Automated Test Suite
+### 5. Run Automated Test Suite
 ```bash
 python -m unittest discover -s tests
 ```
@@ -92,12 +112,11 @@ python -m unittest discover -s tests
 │   ├── requirements.txt     # Python backend dependencies
 │   └── uploads/             # Media upload storage
 ├── frontend/
-│   ├── index.html           # Citizen Reporting Portal
-│   ├── admin.html           # Admin Hotspot & Operations Console
-│   ├── worker.html          # Field Sanitation Squad Action Portal
-│   ├── tracker.html         # Public Resolution Proof Certificate
-│   ├── app.js / admin.js    # Client-side UI & Map logic
-│   └── styles.css           # Modern design system & theme tokens
+│   ├── react-app/src/       # React rendering and portal routing
+│   ├── index.html, admin.html, worker.html, tracker.html  # Existing portal layout and behavior sources
+│   ├── package.json         # React and Vite dependencies
+│   ├── vite.config.js       # Development proxy and production build
+│   └── dist/                # Generated production frontend
 ├── docs/                    # Pitch guide, execution logs & architecture diagrams
 └── README.md                # Project documentation
 ```
