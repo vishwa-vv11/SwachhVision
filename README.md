@@ -48,7 +48,6 @@ Each incident card presents the submitted waste photo, AI-assessed extent and se
 
 1. **Dual AI Visual Assessment**:
    - Analyzes citizen hazard photos using YOLOv8 segmentation and OpenCV spatial pixel coverage.
-   - Accurately classifies waste categories (Biodegradable, Non-Biodegradable Plastic, Hazardous, Construction Debris).
 2. **Context-Aware Severity Scoring**:
    - Dynamically weights waste extent score (1–5) against proximity to sensitive points of interest (Schools, Hospitals, Water Bodies, Bus Stations) via OpenStreetMap reverse geocoding.
 3. **DBSCAN Spatial Hotspot Clustering**:
